@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Boxes Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS variables for the color scheme */
+        :root {
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div id="root"></div>
+    </div>
+
+    <script>
+        const { useState, useMemo } = React;
+        const { motion } = Motion;
+
+        // Utility function to combine class names
+        function cn(...inputs) {
+            return inputs.filter(Boolean).join(' ');
+        }
+
+        // Boxes component with Framer Motion
+        function Boxes({ className, ...rest }) {
+            const rows = new Array(150).fill(1);
+            const cols = new Array(100).fill(1);
+            const colors = [
+                "--slate-900",
+                "--slate-800", 
+                "--slate-700",
+                "--slate-600",
+            ];
+
+            return React.createElement('div', {
+                style: {
+                    transform: `translate(-40%,-60%) skewX(-48deg) skewY(14deg) scale(0.675) rotate(0deg) translateZ(0)`,
+                },
+                className: cn(
+                    "absolute left-1/4 p-4 -top-14 flex -translate-x-1/2 -translate-y-1/2 w-full h-full z-0",
+                    className
+                ),
+                ...rest
+            }, 
+            rows.map((_, i) => 
+                React.createElement(motion.div, {
+                    key: `row` + i,
+                    className: "w-16 h-8 border-l border-slate-700/20 relative"
+                },
+                cols.map((_, j) => 
+                    React.createElement(motion.div, {
+                        whileHover: {
+                            backgroundColor: `var(${colors[Math.floor(Math.random() * colors.length)]})`,
+                            transition: { duration: 0 },
+                        },
+                        animate: {
+                            transition: { duration: 2 },
+                        },
+                        key: `col` + j,
+                        className: "w-16 h-8 border-r border-t border-slate-700/20 relative"
+                    },
+                    j % 2 === 0 && i % 2 === 0 ? 
+                        React.createElement('svg', {
+                            xmlns: "http://www.w3.org/2000/svg",
+                            fill: "none",
+                            viewBox: "0 0 24 24",
+                            strokeWidth: "1.5",
+                            stroke: "currentColor",
+                            className: "absolute h-6 w-10 -top-[14px] -left-[22px] text-slate-700/40 stroke-[1px] pointer-events-none"
+                        },
+                        React.createElement('path', {
+                            strokeLinecap: "round",
+                            strokeLinejoin: "round",
+                            d: "M12 6v12m6-6H6"
+                        })
+                        ) : null
+                    )
+                ))
+            ));
+        }
+
+        // Main BackgroundBoxesDemo component
+        function BackgroundBoxesDemo() {
+            return React.createElement('div', {
+                className: "h-96 relative w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center rounded-lg"
+            },
+            React.createElement('div', {
+                className: "absolute inset-0 w-full h-full bg-slate-900 z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none"
+            }),
+            React.createElement(Boxes),
+            React.createElement('h1', {
+                className: cn("md:text-4xl text-xl text-white relative z-20")
+            }, "Tailwind is Awesome"),
+            React.createElement('p', {
+                className: "text-center mt-2 text-neutral-300 relative z-20"
+            }, "Framer motion is the best animation library ngl")
+            );
+        }
+
+        // Render the component
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(BackgroundBoxesDemo));
+    </script>
+</body>
+</html>
